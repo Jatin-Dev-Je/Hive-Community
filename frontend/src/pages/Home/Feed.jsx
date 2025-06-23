@@ -220,6 +220,7 @@ export default function Feed() {
               <FeedItem
                 key={item._id}
                 item={{
+                  ...item,
                   id: item._id,
                   type: item.type,
                   author: item.author?.firstName || "User",
@@ -229,6 +230,22 @@ export default function Feed() {
                   createdAt: item.createdAt,
                   tags: item.tags || [],
                   relativeTime: relativeTime(item.createdAt),
+                  authorId: item.author?._id,
+                }}
+                currentUser={user}
+                onPostUpdated={() => {
+                  setLoading(true);
+                  fetchThreads().then((res) => {
+                    setThreads(res.data.threads || []);
+                    setLoading(false);
+                  });
+                }}
+                onPostDeleted={() => {
+                  setLoading(true);
+                  fetchThreads().then((res) => {
+                    setThreads(res.data.threads || []);
+                    setLoading(false);
+                  });
                 }}
               />
             ))

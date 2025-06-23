@@ -15,6 +15,11 @@ export default function EditProfile() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+  const [goals, setGoals] = useState("");
+  const [interests, setInterests] = useState("");
+  const [expertise, setExpertise] = useState("");
+  const [isMentor, setIsMentor] = useState(false);
+  const [isSeekingMentor, setIsSeekingMentor] = useState(false);
   const fileInputRef = useRef();
   const navigate = useNavigate();
 
@@ -32,6 +37,11 @@ export default function EditProfile() {
         setLastName(res.data.data.user.lastName || "");
         setBio(res.data.data.user.bio || "");
         setAvatarUrl(res.data.data.user.avatarUrl || res.data.data.user.avatar || "");
+        setGoals((res.data.data.user.goals || []).join(", "));
+        setInterests((res.data.data.user.interests || []).join(", "));
+        setExpertise((res.data.data.user.expertise || []).join(", "));
+        setIsMentor(!!res.data.data.user.isMentor);
+        setIsSeekingMentor(!!res.data.data.user.isSeekingMentor);
       } catch (err) {
         setError("Failed to load profile");
       } finally {
@@ -69,6 +79,11 @@ export default function EditProfile() {
           lastName,
           bio,
           avatarUrl: uploadedAvatarUrl,
+          goals: goals.split(",").map(g => g.trim()).filter(Boolean),
+          interests: interests.split(",").map(i => i.trim()).filter(Boolean),
+          expertise: expertise.split(",").map(e => e.trim()).filter(Boolean),
+          isMentor,
+          isSeekingMentor,
         },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -153,6 +168,58 @@ export default function EditProfile() {
               rows={4}
               placeholder="Tell us about yourself..."
             />
+          </div>
+          <div className="flex gap-4">
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Goals <span className="text-xs text-gray-400">(comma separated)</span></label>
+              <input
+                type="text"
+                className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                value={goals}
+                onChange={e => setGoals(e.target.value)}
+                placeholder="e.g. Become a developer, Learn React"
+              />
+            </div>
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Interests <span className="text-xs text-gray-400">(comma separated)</span></label>
+              <input
+                type="text"
+                className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                value={interests}
+                onChange={e => setInterests(e.target.value)}
+                placeholder="e.g. Web, AI, Design"
+              />
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Expertise <span className="text-xs text-gray-400">(comma separated)</span></label>
+            <input
+              type="text"
+              className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+              value={expertise}
+              onChange={e => setExpertise(e.target.value)}
+              placeholder="e.g. JavaScript, UI/UX, Python"
+            />
+          </div>
+          <div className="flex gap-4">
+            <div className="flex-1 flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={isMentor}
+                onChange={e => setIsMentor(e.target.checked)}
+                id="isMentor"
+              />
+              <label htmlFor="isMentor" className="text-sm text-gray-700 dark:text-gray-200">I am open to mentoring others</label>
+            </div>
+            <div className="flex-1 flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={isSeekingMentor}
+                onChange={e => setIsSeekingMentor(e.target.checked)}
+                id="isSeekingMentor"
+              />
+              <label htmlFor="isSeekingMentor" className="text-sm text-gray-700 dark:text-gray-200">I am seeking a mentor</label>
+            </div>
           </div>
           {error && <div className="text-red-500 text-sm">{error}</div>}
           {success && <div className="text-green-600 text-sm">{success}</div>}

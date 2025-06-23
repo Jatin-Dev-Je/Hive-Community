@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { UserCircleIcon } from "@heroicons/react/24/solid";
+import FeedItem from "../../components/Posts/FeedItem";
+import { useSelector } from "react-redux";
 
 function relativeTime(date) {
   const now = new Date();
@@ -18,8 +20,9 @@ export default function ThreadDetail() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const user = useSelector((state) => state.auth.user);
 
-  useEffect(() => {
+  const fetchThreadAndPosts = () => {
     setLoading(true);
     setError(null);
     Promise.all([
@@ -35,6 +38,11 @@ export default function ThreadDetail() {
         setError("Failed to load thread");
         setLoading(false);
       });
+  };
+
+  useEffect(() => {
+    fetchThreadAndPosts();
+    // eslint-disable-next-line
   }, [id]);
 
   return (
@@ -82,18 +90,25 @@ export default function ThreadDetail() {
             ) : (
               <div className="space-y-4">
                 {posts.map((post) => (
-                  <div key={post._id} className="rounded-lg bg-indigo-50 dark:bg-gray-800 p-4 border border-indigo-100 dark:border-gray-800">
-                    <div className="flex items-center gap-2 mb-1">
-                      <img
-                        src={post.author?.avatar || "/avatar.svg"}
-                        alt={post.author?.firstName || "User"}
-                        className="w-8 h-8 rounded-full object-cover border border-indigo-100 dark:border-gray-800"
-                      />
-                      <span className="font-medium text-gray-900 dark:text-white">{post.author?.firstName || "User"}</span>
-                      <span className="text-xs text-gray-400 ml-auto">{relativeTime(post.createdAt)}</span>
-                    </div>
-                    <div className="text-gray-700 dark:text-gray-300">{post.content}</div>
-                  </div>
+                  <FeedItem
+                    key={post._id}
+                    item={{
+                      ...post,
+                      id: post._id,
+                      type: post.type,
+                      author: post.author?.firstName || "User",
+                      avatar: post.author?.avatar,
+                      title: post.title,
+                      content: post.content,
+                      createdAt: post.createdAt,
+                      tags: post.tags || [],
+                      relativeTime: relativeTime(post.createdAt),
+                      authorId: post.author?._id,
+                    }}
+                    currentUser={user}
+                    onPostUpdated={fetchThreadAndPosts}
+                    onPostDeleted={fetchThreadAndPosts}
+                  />
                 ))}
               </div>
             )}

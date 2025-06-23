@@ -21,3 +21,29 @@ export const resetPassword = async (token, password) => {
   const response = await axios.post(`${API_URL}/auth/reset-password`, { token, password });
   return response.data;
 };
+
+export const getMe = async () => {
+  const token = localStorage.getItem('token');
+  const response = await axios.get(`${API_URL}/auth/me`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
+
+export const updateProfile = async (data) => {
+  const token = localStorage.getItem('token');
+  const response = await axios.put(`${API_URL}/auth/profile`, data, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
+
+export const changePassword = async (oldPassword, newPassword) => {
+  const token = localStorage.getItem('token');
+  const response = await axios.put(
+    `${API_URL}/auth/change-password`,
+    { oldPassword, newPassword },
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+  return response.data;
+};

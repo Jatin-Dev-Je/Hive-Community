@@ -2,70 +2,76 @@ import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
-export const fetchThreads = async (params = {}) => {
-  const response = await axios.get(`${API_URL}/threads`, { params });
+export const fetchRepliesByPost = async (postId, params = {}) => {
+  const response = await axios.get(`${API_URL}/replies/post/${postId}`, { params });
   return response.data;
 };
 
-export const createThread = async (data) => {
+export const createReply = async (data) => {
   const token = localStorage.getItem('token');
   const response = await axios.post(
-    `${API_URL}/threads`,
+    `${API_URL}/replies`,
     data,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
+    { headers: { Authorization: `Bearer ${token}` } }
   );
   return response.data;
 };
 
-export const updatePost = async (id, data) => {
+export const updateReply = async (id, data) => {
   const token = localStorage.getItem('token');
   const response = await axios.put(
-    `${API_URL}/posts/${id}`,
+    `${API_URL}/replies/${id}`,
     data,
     { headers: { Authorization: `Bearer ${token}` } }
   );
   return response.data;
 };
 
-export const deletePost = async (id) => {
+export const deleteReply = async (id) => {
   const token = localStorage.getItem('token');
   const response = await axios.delete(
-    `${API_URL}/posts/${id}`,
+    `${API_URL}/replies/${id}`,
     { headers: { Authorization: `Bearer ${token}` } }
   );
   return response.data;
 };
 
-export const likePost = async (id) => {
+export const likeReply = async (id) => {
   const token = localStorage.getItem('token');
   const response = await axios.post(
-    `${API_URL}/posts/${id}/like`,
+    `${API_URL}/replies/${id}/like`,
     {},
     { headers: { Authorization: `Bearer ${token}` } }
   );
   return response.data;
 };
 
-export const dislikePost = async (id) => {
+export const dislikeReply = async (id) => {
   const token = localStorage.getItem('token');
   const response = await axios.post(
-    `${API_URL}/posts/${id}/dislike`,
+    `${API_URL}/replies/${id}/dislike`,
     {},
     { headers: { Authorization: `Bearer ${token}` } }
   );
   return response.data;
 };
 
-export const acceptAnswer = async (id) => {
+export const markHelpful = async (id) => {
   const token = localStorage.getItem('token');
   const response = await axios.post(
-    `${API_URL}/posts/${id}/accept`,
+    `${API_URL}/replies/${id}/mark-helpful`,
     {},
     { headers: { Authorization: `Bearer ${token}` } }
   );
   return response.data;
 };
+
+export const unmarkHelpful = async (id) => {
+  const token = localStorage.getItem('token');
+  const response = await axios.post(
+    `${API_URL}/replies/${id}/unmark-helpful`,
+    {},
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+  return response.data;
+}; 
